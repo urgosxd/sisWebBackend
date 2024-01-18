@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     # logal django apps
-    'drfauth.apps.DrfauthConfig'
+    'drfauth.apps.DrfauthConfig',
+    'crud.apps.CrudConfig'
 ]
 
 # SOCIALACCOUNT_PROVIDERS = {
@@ -128,7 +129,7 @@ REST_AUTH = {
     'USE_JWT': True,
 }
 
-ROOT_URLCONF = 'sisWeb.urls'
+ROOT_URLCONF = 'core.urls'
 
 from datetime import timedelta
 
