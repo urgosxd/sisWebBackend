@@ -10,8 +10,8 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now())
 
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ['email','username']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['username','email']
     objects = CustomUserManager()
     def __str__(self):
         return self.username
