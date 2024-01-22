@@ -3,6 +3,14 @@ from rest_framework import serializers,exceptions
 from drfauth.models import CustomUser
 from dj_rest_auth.serializers import LoginSerializer
 
+class CustomUserSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = CustomUser
+    fields = [
+      "username",
+      "password",
+    ]
+    
 class CustomLoginSerializer(LoginSerializer):
 
     def authenticate(self, **options):
