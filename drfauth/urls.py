@@ -8,5 +8,5 @@ from drfauth.views import CustomLoginEmailView
 urlpatterns = [
         path("login/",CustomLoginEmailView.as_view(),name="rest_login"),
          path("register/", RegisterView.as_view(), name="rest_register"),
-         path("tokken/refresh/",get_refresh_view,name="gaa")
+         path("tokken/refresh/",get_refresh_view(),name="gaa")
         ]
