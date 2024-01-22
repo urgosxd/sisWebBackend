@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.db.models.base import MultipleObjectsReturned
 
 from drfauth.models import CustomUser
+
 class EmailBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
@@ -15,8 +16,8 @@ class EmailBackend(ModelBackend):
         except MultipleObjectsReturned:
             return CustomUser.objects.filter(username=username).order_by('id').first()
         else:
-            # print(user)
-            # print(user.check_password(password))
+            print(user)
+            print(user.check_password(password))
             if user.check_password(password) and self.user_can_authenticate(user):
                 return user
 
