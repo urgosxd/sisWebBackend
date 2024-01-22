@@ -12,7 +12,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     ]
     
 class CustomLoginSerializer(LoginSerializer):
-
+    email = None
     def authenticate(self, **options):
         return authenticate(self.context["request"], **options)
 
