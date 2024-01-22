@@ -102,6 +102,8 @@ SOCIALACCOUNT_AUTO_SIGNUP=False
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = 'username'
 ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_REQUIRED = False
 SITE_ID = 1  # https://dj-rest-auth.readthedocs.io/en/latest/installation.html#registration-optional
 REST_USE_JWT = True # use JSON Web Tokens
 
