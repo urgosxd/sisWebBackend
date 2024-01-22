@@ -179,7 +179,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 
 DATABASES = {
-        'default':dj_database_url.config(default="mysql://uzmduhmy_josue:Admin123321Admin@single-5922.banahosting.com:3306/uzmduhmy_django_mysqlSisWeb", conn_max_age=600),
+        'default':dj_database_url.config(default="mysql://uzmduhmy_josue:Admin123321Admin@single-5922.banahosting.com:3306/uzmduhmy_django_mysqlSisWeb", conn_max_age=60,conn_health_checks=True),
         }
 
 
