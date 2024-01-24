@@ -8,5 +8,5 @@ class DocumentModelSerializer(ModelSerializer):
 
 class TourModelSerializer(ModelSerializer):
     class Meta:
-        models = Tour
+        model = Tour
         fields = '__all__'
