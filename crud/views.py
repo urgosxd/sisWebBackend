@@ -20,3 +20,4 @@ class TourView(viewsets.ModelViewSet):
         
         return [permision() for permision in permission_classes]
     
+    
