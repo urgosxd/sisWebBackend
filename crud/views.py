@@ -45,14 +45,14 @@ class FichaTecnicaView(viewsets.ModelViewSet):
         else: 
             permission_classes = [IsAuthenticated]
         return [permision() for permision in permission_classes]
-    def retrieve(self, request, *args,**kwargs):
-        instance = self.get_object()
-        print(dir(instance))
-        serializer = self.get_serializer(instance)
-        # write_file(instance.Doc_Content,instance.FileName)
-        # file_path = staticfiles_storage.path(one.FileName+"."+one.Extension)
+    # def retrieve(self, request, *args,**kwargs):
+    #     instance = self.get_object()
+    #     print(dir(instance))
+    #     serializer = self.get_serializer(instance)
+    #     # write_file(instance.Doc_Content,instance.FileName)
+    #     # file_path = staticfiles_storage.path(one.FileName+"."+one.Extension)
 
-        return Response(serializer.data)
+    #     return Response(serializer.data)
         
 
 

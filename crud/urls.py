@@ -11,5 +11,5 @@ router = routers.DefaultRouter()
 # rout
 urlpatterns = [
         path("tours/",TourView.as_view({'get':'list','post':'create'}),name="tours"),
-        path("fichaTecnica/",FichaTecnicaView.as_view({'get':'retrieve'}),name="ficha")
+        path("fichaTecnica/",FichaTecnicaView.as_view({'get':'list'}),name="ficha")
         ]
