@@ -11,6 +11,7 @@ class TourModelSerializer(ModelSerializer):
     fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,read_only=True)
     class Meta:
         model = Tour
-        fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = '__all__'
 
 

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from crud.views import FichaTecnicaView, TourView
 from rest_framework import routers
@@ -6,10 +6,12 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 
-# router.register(r'tours',TourView, 'tours')
+router.register(r'ficha',FichaTecnicaView, 'ficha')
+router2 = routers.DefaultRouter()
+router2.register(r'tour',TourView, 'tour')
 
-# rout
+
 urlpatterns = [
-        path("tours/",TourView.as_view({'get':'list','post':'create'}),name="tours"),
-        path("fichaTecnica/",FichaTecnicaView.as_view({'get':'list'}),name="ficha")
+        path("tours/",include(router2.urls)),
+        path("fichaTecnica/",include(router.urls))
         ]

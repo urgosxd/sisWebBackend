@@ -1,6 +1,7 @@
 from dj_rest_auth.views import IsAuthenticated
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from crud.models import FichaTecnica, Tour
 import tempfile
 import os
@@ -14,25 +15,48 @@ class TourView(viewsets.ModelViewSet):
     # permission_classes = []
     serializer_class = TourModelSerializer
     queryset = Tour.objects.all()
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
         if self.action == 'list':
             permission_classes = []
         else: 
-            permission_classes = [IsAuthenticated]
+            permission_classes = []
         return [permision() for permision in permission_classes]
+    def perform_create(self, serializer):
+        tour = serializer.save()
+        print(self.request.parser_context['kwargs'])
+        # tour.fichasTecnicas.
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer,request.data["FileName"],request.data["Extension"],request.data["Doc_Content"])
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    def perform_update(self, serializer,*args):
+        tour = serializer.save()
+        tour.fichasTecnicas.all().delete()
+
+        
+
+
+
     
  # class FichaTecnicaView(viewsets.ModelViewSet):
     # permission_classes = []
 def write_file(data, filename,ext):
+    print(filename,ext)
     fd, path = tempfile.mkstemp(suffix="."+ext,prefix=filename,dir="staticfiles/")
     # Convert binary data to proper format and write it on Hard Disk
     try:
-        with os.fdopen(fd, 'w') as tmp:
+        with os.fdopen(fd, 'wb') as tmp:
         # do stuff with temp file
             tmp.write(data)
     finally:
-        os.remove(path)
+        return path
 
 class FichaTecnicaView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -45,14 +69,19 @@ class FichaTecnicaView(viewsets.ModelViewSet):
         else: 
             permission_classes = [IsAuthenticated]
         return [permision() for permision in permission_classes]
-    # def retrieve(self, request, *args,**kwargs):
-    #     instance = self.get_object()
-    #     print(dir(instance))
-    #     serializer = self.get_serializer(instance)
-    #     # write_file(instance.Doc_Content,instance.FileName)
-    #     # file_path = staticfiles_storage.path(one.FileName+"."+one.Extension)
+    def retrieve(self, request, *args,**kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        path = write_file(instance.Doc_Content,instance.FileName,instance.Extension)
+        # file_path = staticfiles_storage.path(one.FileName+"."+one.Extension)
+        with open(path,'rb') as pdf:
+            response = HttpResponse(pdf.read(),content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{instance.FileName}.pdf"'
+            os.remove(path)
+            return response
 
-    #     return Response(serializer.data)
+
+
         
 
 
