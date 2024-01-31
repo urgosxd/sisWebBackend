@@ -1,3 +1,4 @@
+import base64
 from dj_rest_auth.views import IsAuthenticated
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -10,6 +11,7 @@ from rest_framework.response import Response
 from django.db import transaction 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.parsers import MultiPartParser,FormParser,JSONParser
+import json
 # Create your views here.
 
 class TourView(viewsets.ModelViewSet):
@@ -28,21 +30,29 @@ class TourView(viewsets.ModelViewSet):
             permission_classes = []
         return [permision() for permision in permission_classes]
     def perform_create(self, serializer,files):
-        # print(files)
-        ga= FichaTecnicaSerializer(data=files,many=True)
-        if ga.is_valid():
-            ga.save()
-        else:
-            print(ga.errors)
-            # print("NOOO")
+        # print(files[0]["Extension"])
+        # print(files[0])
+        with transaction.atomic():
+            tour = serializer.save()
+            for i in files:
+                i["Tour"] = tour.id
+                format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+                ext = format.split('/')[-1]  # guess file extension
+                i["Doc_Content"] = base64.b64decode(filestr).decode('latin-1')
+                print((i["Doc_Content"]))
+            ga= FichaTecnicaSerializer(data=files,many=True)
+            if ga.is_valid():
+                ga.save()
+            else:
+                print(ga.errors)
+                print("NOOO")
 
-        # with transaction.atomic():
-            # tour = serializer.save()
     def create(self, request, *args, **kwargs):
         # print(request.data)
         serializer = self.get_serializer(data = request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer,request.data["fichas"])
+        # print(request.data["fichas"])
+        self.perform_create(serializer,json.loads(request.data["fichas"]))
         # print(serializer.errors)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
