@@ -18,7 +18,7 @@ class Tour(models.Model):
     pvp = models.DecimalField(max_digits=8, decimal_places=2)
     
 class FichaTecnica(Document):
-    Tour = models.ForeignKey(Tour,on_delete=models.CASCADE,related_name="fichasTecnicas")
+    Tour = models.ForeignKey(Tour,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
 
 
 

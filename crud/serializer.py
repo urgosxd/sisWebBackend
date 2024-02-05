@@ -3,27 +3,20 @@ from crud.models import FichaTecnica, Tour
 from rest_framework import serializers
 import base64
 
+class BinaryField(serializers.Field):
+    def to_representation(self, value):
+        return value.decode('latin-1')
+    def to_internal_value(self, value):
+         return value
+
 class FichaTecnicaSerializer(ModelSerializer):
-    def create(self, validated_data):
-        print("GAA")
-        print(validated_data)
-        format, filestr = validated_data["Doc_Content"].split(';base64,')  # format ~= data:image/X,
-        ext = format.split('/')[-1]  # guess file extension
-        validated_data["Doc_Content"] = base64.b64decode(filestr)
-        instance = FichaTecnica.objects.create(**validated_data)
-        return instance
-    def validate_Doc_Content(self, value):
-        print(value)
-        return value
-    def validate(self, attrs):
-        print(attrs)
-    
     class Meta:
         model = FichaTecnica
         fields='__all__'
+    Doc_Content = BinaryField()
 
 class TourModelSerializer(ModelSerializer):
-    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,read_only=True)
+    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
     class Meta:
         model = Tour
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
