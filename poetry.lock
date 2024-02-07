@@ -428,6 +428,17 @@ asgiref = ">=3.6"
 Django = ">=3.2"
 
 [[package]]
+name = "django-currentuser"
+version = "0.6.1"
+description = "Conveniently store reference to request user on thread/db level."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_currentuser-0.6.1-py3-none-any.whl", hash = "sha256:615145569c55118f1566fd369fa87ade74e9cf46ba199f3ae0c1c2dee5df25b9"},
+    {file = "django_currentuser-0.6.1.tar.gz", hash = "sha256:7a53da0c7bbddf480dec838c744f92673f23cafe5be0aa4253f1391a9ac5dac4"},
+]
+
+[[package]]
 name = "djangorestframework"
 version = "3.14.0"
 description = "Web APIs for Django, made easy."
@@ -495,6 +506,17 @@ python-versions = ">=3.5"
 files = [
     {file = "idna-3.6-py3-none-any.whl", hash = "sha256:c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f"},
     {file = "idna-3.6.tar.gz", hash = "sha256:9ecdbbd083b06798ae1e86adcbfe8ab1479cf864e4ee30fe4e46a003d12491ca"},
+]
+
+[[package]]
+name = "install"
+version = "1.3.5"
+description = "Install packages from within code"
+optional = false
+python-versions = ">=2.7, >=3.5"
+files = [
+    {file = "install-1.3.5-py3-none-any.whl", hash = "sha256:0d3fadf4aa62c95efe8d34757c8507eb46177f86c016c21c6551eafc6a53d5a9"},
+    {file = "install-1.3.5.tar.gz", hash = "sha256:e67c8a0be5ccf8cb4ffa17d090f3a61b6e820e6a7e21cd1d2c0f7bc59b18e647"},
 ]
 
 [[package]]
@@ -796,4 +818,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d68a698ddb571ab288b094b26e0ef604b1ccde4bb49184f1d5ee6172a86c0f08"
+content-hash = "1c4c00b2dd13cc0798d34f647d0fe458a22c47683fc2590bd6f83e39c08c8efc"

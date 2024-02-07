@@ -3,10 +3,10 @@ from dj_rest_auth.views import IsAuthenticated
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from rest_framework import status, viewsets
-from crud.models import FichaTecnica, Tour
+from crud.models import FichaTecnica, Notification, Tour
 import tempfile
 import os
-from crud.serializer import FichaTecnicaSerializer, TourModelSerializer
+from crud.serializer import FichaTecnicaSerializer, NotificationSerializer, TourModelSerializer
 from rest_framework.response import Response
 from django.db import transaction 
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -61,14 +61,36 @@ class TourView(viewsets.ModelViewSet):
         
         
     def perform_update(self, serializer,files):
-        for i in files:
-            print(i["FileName"])
-        # with transaction.atomic():
-        #     tour = serializer.save()
-        #     for i in files:
-        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
-        #         ext = format.split('/')[-1]  # guess file extension
-        #         i["Doc_Content"] = base64.b64decode(filestr)
+        print(files)
+        if files is None:
+            return
+        with transaction.atomic():
+            tour = serializer.save()
+            fichasTour= tour.fichasTecnicas.all()
+            newFiles = []
+            for i in files:
+                if i is not None:
+                    format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+                    ext = format.split('/')[-1]  # guess file extension
+                    i["Doc_Content"] = base64.b64decode(filestr)
+                    ficha = FichaTecnicaSerializer(data=i)
+                    if ficha.is_valid():
+                        newFiles.append(ficha.save())
+                    else:
+                        print(ficha.errors)
+                else:
+                    newFiles.append(None)
+            while len(newFiles) < len(fichasTour):
+                files.append(None)
+            newQuerySet = []
+            for a ,b in zip(fichasTour,newFiles):
+                if b is not None:
+                    newQuerySet.append(b)
+            else:
+                newQuerySet.append(a)
+
+            tour.fichasTecnicas.set(newQuerySet)
+                           
 
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
@@ -77,8 +99,10 @@ class TourView(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer,json.loads(request.data["fichas"]))
-
+        try:
+            self.perform_update(serializer,json.loads(request.data["fichas"]))
+        except:
+            self.perform_update(serializer,None)
         if getattr(instance, '_prefetched_objects_cache', None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
@@ -121,6 +145,23 @@ class FichaTecnicaView(viewsets.ModelViewSet):
             response['Content-Disposition'] = f'attachment; filename="{instance.FileName}.pdf"'
             os.remove(path)
             return response
+
+
+class NotificationView(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    queryset = Notification.objects.all()
+    permission_classes = []
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance)
+        
+
+
+
+
+    
+
+    
 
 
 
