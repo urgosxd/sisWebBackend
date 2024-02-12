@@ -27,14 +27,9 @@ class TourView(viewsets.ModelViewSet):
         if self.action == 'list':
             permission_classes = []
         else: 
-            permission_classes = []
+            permission_classes = [IsAuthenticated]
         return [permision() for permision in permission_classes]
     def perform_create(self, serializer,files):
-        # print(files[0]["Extension"])
-        # print(files)
-        print(len(files))
-        for i in files:
-            print(i["FileName"])
         with transaction.atomic():
             tour = serializer.save()
             for i in files:
@@ -50,8 +45,7 @@ class TourView(viewsets.ModelViewSet):
                 print("NOOO")
 
     def create(self, request, *args, **kwargs):
-        # print(request.data)
-        serializer = self.get_serializer(data = request.data)
+        serializer = self.get_serializer(data = request.data,context={'request':request})
         serializer.is_valid(raise_exception=True)
         # print(request.data["fichas"])
         self.perform_create(serializer,json.loads(request.data["fichas"]))
@@ -63,41 +57,42 @@ class TourView(viewsets.ModelViewSet):
     def perform_update(self, serializer,files):
         print(files)
         if files is None:
-            return
-        with transaction.atomic():
-            tour = serializer.save()
-            fichasTour= tour.fichasTecnicas.all()
-            newFiles = []
-            for i in files:
-                if i is not None:
-                    format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
-                    ext = format.split('/')[-1]  # guess file extension
-                    i["Doc_Content"] = base64.b64decode(filestr)
-                    ficha = FichaTecnicaSerializer(data=i)
-                    if ficha.is_valid():
-                        newFiles.append(ficha.save())
+            serializer.save()
+        else:
+            with transaction.atomic():
+                tour = serializer.save()
+                fichasTour= tour.fichasTecnicas.all()
+                newFiles = []
+                for i in files:
+                    if i is not None:
+                        format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+                        ext = format.split('/')[-1]  # guess file extension
+                        i["Doc_Content"] = base64.b64decode(filestr)
+                        ficha = FichaTecnicaSerializer(data=i)
+                        if ficha.is_valid():
+                            newFiles.append(ficha.save())
+                        else:
+                            print(ficha.errors)
                     else:
-                        print(ficha.errors)
+                        newFiles.append(None)
+                while len(newFiles) < len(fichasTour):
+                    files.append(None)
+                newQuerySet = []
+                for a ,b in zip(fichasTour,newFiles):
+                    if b is not None:
+                        newQuerySet.append(b)
                 else:
-                    newFiles.append(None)
-            while len(newFiles) < len(fichasTour):
-                files.append(None)
-            newQuerySet = []
-            for a ,b in zip(fichasTour,newFiles):
-                if b is not None:
-                    newQuerySet.append(b)
-            else:
-                newQuerySet.append(a)
+                    newQuerySet.append(a)
 
-            tour.fichasTecnicas.set(newQuerySet)
-                           
+                tour.fichasTecnicas.set(newQuerySet)
+                               
 
     def partial_update(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
         serializer.is_valid(raise_exception=True)
         try:
             self.perform_update(serializer,json.loads(request.data["fichas"]))
@@ -133,7 +128,7 @@ class FichaTecnicaView(viewsets.ModelViewSet):
         if self.action == 'list':
             permission_classes = []
         else: 
-            permission_classes = [IsAuthenticated]
+            permission_classes = []
         return [permision() for permision in permission_classes]
     def retrieve(self, request, *args,**kwargs):
         instance = self.get_object()
@@ -151,6 +146,10 @@ class NotificationView(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     queryset = Notification.objects.all()
     permission_classes = []
+    def list(self, request, *args, **kwargs):
+        last = Notification.objects.last()
+        serialiser = NotificationSerializer(last)
+        return Response(serialiser.data)
     # def retrieve(self, request, *args, **kwargs):
     #     instance = self.get_object()
     #     serializer = self.get_serializer(instance)
