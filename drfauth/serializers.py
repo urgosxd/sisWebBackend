@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers,exceptions
 from drfauth.models import CustomUser
 from dj_rest_auth.serializers import LoginSerializer
+from dj_rest_auth.registration.serializers import RegisterSerializer
 
 class CustomUserSerializer(serializers.ModelSerializer):
   class Meta:
@@ -9,6 +10,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
     fields = [
       "username",
       "password",
+      "role"
     ]
     
 class CustomLoginSerializer(LoginSerializer):
@@ -32,4 +34,11 @@ class CustomLoginSerializer(LoginSerializer):
             raise exceptions.ValidationError(msg)
         attrs["user"] = user
         return attrs
+class CustomRegisterSerializer(RegisterSerializer):
+    role = serializers.CharField(max_length=10)
+    def get_cleaned_data(self):
+        data_dict = super().get_cleaned_data()
+        data_dict['role'] = self.validated_data.get('role', '')
+        return data_dict
+
 

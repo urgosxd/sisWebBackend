@@ -119,10 +119,6 @@ AUTH_USER_MODEL = "drfauth.CustomUser"
 # We need to specify the exact serializer as well for dj-rest-auth, otherwise it will end up shooting itself
 # in the foot and me in the head
 
-REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'drfauth.serializers.CustomUser'
-}
-
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
@@ -137,9 +133,14 @@ REST_FRAMEWORK = {
 
 REST_AUTH = {
     'USE_JWT': True,
-    'JWT_AUTH_HTTPONLY':False
+    'JWT_AUTH_HTTPONLY':False,
+    "LOGIN_SERIALIZER": 'drfauth.serializers.CustomLoginSerializer',
+    'USER_DETAILS_SERIALIZER': 'drfauth.serializers.CustomUserSerializer',
+    "REGISTER_SERIALIZER": 'drfauth.serializers.CustomRegisterSerializer'
     
 }
+
+ACCOUNT_ADAPTER = 'drfauth.adapters.CustomUserAdapter'
 
 ROOT_URLCONF = 'core.urls'
 
