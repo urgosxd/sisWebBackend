@@ -17,5 +17,6 @@ router3.register(r'notification',NotificationView,'notification')
 urlpatterns = [
         path("tours/",include(router2.urls)),
         path("fichaTecnica/",include(router.urls)),
-        path("notification/",include(router3.urls))
+        path("notification/",include(router3.urls)),
+        # path("currency/",CurrencyStatus.as_view())
         ]

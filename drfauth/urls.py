@@ -8,5 +8,5 @@ from rest_framework_simplejwt.views import TokenRefreshView
 urlpatterns = [
         path("login/",LoginView.as_view(),name="rest_login"),
          path("register/", RegisterView.as_view(), name="rest_register"),
-         path("tokken/refresh/",TokenRefreshView.as_view(),name="simplejwt")
+         path("tokken/refresh/",get_refresh_view().as_view(),name="simplejwt")
         ]

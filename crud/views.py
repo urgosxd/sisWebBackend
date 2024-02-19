@@ -1,5 +1,5 @@
 import base64
-from dj_rest_auth.views import IsAuthenticated
+from dj_rest_auth.views import APIView, AllowAny, IsAuthenticated
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from rest_framework import status, viewsets
@@ -12,6 +12,8 @@ from django.db import transaction
 from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.parsers import MultiPartParser,FormParser,JSONParser
 import json
+from django.core.cache import cache
+from django.http import JsonResponse
 # Create your views here.
 
 class TourView(viewsets.ModelViewSet):
@@ -154,6 +156,16 @@ class NotificationView(viewsets.ModelViewSet):
     #     instance = self.get_object()
     #     serializer = self.get_serializer(instance)
         
+
+# class CurrencyStatus(APIView):
+#     permission_classes=[AllowAny]
+#     def get(self,request):
+#         api_response = cache.get('api_response')
+#         if api_response:
+#             return JsonResponse(api_response)
+#         else:
+#             return JsonResponse({'error': 'No hay datos disponibles'}, status=404)
+
 
 
 
