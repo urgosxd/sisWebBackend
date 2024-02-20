@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, raise_errors_on_nested_writes
 from rest_framework.utils import model_meta
-from crud.models import FichaTecnica, FichaTecnicaHotel, Hotel, Notification, Tour
+from crud.models import Boleto, FichaTecnica, FichaTecnicaHotel, FichaTecnicaRestaurante, Guiado, Hotel, Notification, Restaurante, Tour, Transporte, Traslado, Tren, UpSelling
 from rest_framework import serializers
 import base64
 
@@ -100,4 +100,337 @@ class HotelModelSerializer(ModelSerializer):
             field.set(value)
 
         return instance
+
+class HotelModelSerializer(ModelSerializer):
+    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaHotel.objects.all())
+    class Meta:
+        model = Hotel
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','ciudad','clase','nombre','categoria','telefono','telefonoRecepcion','simple','doble','triple','horarioDesayuno','checkIn','checkOut','figma','fichasTecnicas']
+    def create(self,validated_data):
+        print(self.context['request'])
+        validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+class RestauranteModelSerializer(ModelSerializer):
+    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaRestaurante.objects.all())
+    class Meta:
+        model = Restaurante
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','ciudad','nombre','especialidad','tipoDeServicio','horarioDeAtencion','direccion','telefonoReserva','telefonoRecepcion','precioMenu','precioMenuE','checkOut','figma','fichasTecnicas']
+    def create(self,validated_data):
+        print(self.context['request'])
+        validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+class BoletoModelSerializer(ModelSerializer):
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
+    class Meta:
+        model = Boleto
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','ciudad','servicio','pppAdulto','ppeAdulto','pppNinio','ppeNinio','pppInfante','ppeInfante','estudinateP','estudianteE']
+    def create(self,validated_data):
+        print(self.context['request'])
+        # validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+
+class TrasladoModelSerializer(ModelSerializer):
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
+    class Meta:
+        model = Traslado
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','ciudad','servicio','tipoDeVehiculo','ppp','ppe']
+    def create(self,validated_data):
+        print(self.context['request'])
+        # validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+
+
+class TrenModelSerializer(ModelSerializer):
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
+    class Meta:
+        model = Tren
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','ciudad','empresa','ruta','categoria','precioAdulto','precioNinio','precioInfante']
+    def create(self,validated_data):
+        print(self.context['request'])
+        # validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+class TrasnsporteModelSerializer(ModelSerializer):
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
+    class Meta:
+        model = Transporte
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','ciudad','servicio','ppp','ppe']
+    def create(self,validated_data):
+        print(self.context['request'])
+        # validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+
+class UpSellingModelSerializer(ModelSerializer):
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
+    class Meta:
+        model = UpSelling
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','servicioProducto','servicio','detalle','ppp','ppe']
+    def create(self,validated_data):
+        print(self.context['request'])
+        # validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+class GuiadoModelSerializer(ModelSerializer):
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
+    class Meta:
+        model = Guiado
+        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
+        fields = ['id','servicio','idioma','detalle','ptapull','ptbpull','ptapriv','ptbpriv']
+    def create(self,validated_data):
+        print(self.context['request'])
+        # validated_data.pop('fichasTecnicas')
+        user = self.context['request'].user
+        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        return newInstance
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        print(validated_data)
+
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        user = self.context['request'].user
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                if attr == "lastAccessUser":
+                    attr = user
+                setattr(instance, attr, value)
+        instance.save()
+        
+        # Note that many-to-many fields are set after updating instance.
+        # Setting m2m fields triggers signals which could potentially change
+        # updated instance and we do not want it to collide with .update()
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
 

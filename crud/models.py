@@ -167,6 +167,7 @@ class Restaurante(models.Model):
     telefonoReserva = models.CharField(max_length =100,null=False,blank=False)
     telefonoRecepcion = models.CharField(max_length =100,null=False,blank=False)
     precioMenu = models.DecimalField(max_digits=8, decimal_places=2)
+    precioMenuE = models.DecimalField(max_digits=8, decimal_places=2)
     figma = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
     def __eq__(self, other):
@@ -183,21 +184,56 @@ class Restaurante(models.Model):
     def __hash__(self):
         return super().__hash__()
 
+@receiver(post_save,sender=Restaurante)
+def createNotification(sender,instance,created,**kwargs):
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    if not created:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
+            Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un Restaurante de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+        else:
+            print("WAA")
+    else:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
+            print("")
+        else:
+            Notification.objects.create(message=f"{instance.lastAccessUser} creo un Restaurante {NicePrintInstance(instance)}  a las {currentTime}")
+
+
+@receiver(pre_save,sender=Restaurante)
+def getUpdateNotification(sender,instance,**kwargs):
+    prev = None
+    if instance.id:
+       prev = sender.objects.get(id = instance.id)
+       # print("prev",prev)
+    instance.__prev = prev
+    print(instance.__prev)
+
+
+@receiver(post_delete,sender=Restaurante)
+def getDeleteNotification(sender,instance,**kwargs):
+    # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    Notification.objects.create(message=f"{instance.lastAccessUser} borro un Restaurante de {NicePrintInstance(instance)} a las {currentTime}")
+ 
 class FichaTecnicaRestaurante(Document):
     Restaurante = models.ForeignKey(Restaurante,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
 
 
-class Boletos(models.Model):
+class Boleto(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
-    nombre = models.CharField(max_length =100,null=False,blank=False)
-    especialidad = models.CharField(max_length =100,null=False,blank=False)
-    tipoDeServicio = models.CharField(max_length =100,null=False,blank=False)
-    horarioDeAtencion = models.CharField(max_length =100,null=False,blank=False)
-    direccion = models.CharField(max_length =100,null=False,blank=False)
-    telefonoReserva = models.CharField(max_length =100,null=False,blank=False)
-    telefonoRecepcion = models.CharField(max_length =100,null=False,blank=False)
-    precioMenu = models.DecimalField(max_digits=8, decimal_places=2)
-    figma = models.CharField(max_length =250,null=False,blank=False)
+    servicio = models.CharField(max_length =100,null=False,blank=False)
+    pppAdulto = models.DecimalField(max_digits=8, decimal_places=2)
+    ppeAdulto = models.DecimalField(max_digits=8, decimal_places=2)
+    pppNinio = models.DecimalField(max_digits=8, decimal_places=2)
+    ppeNinio = models.DecimalField(max_digits=8, decimal_places=2)
+    pppInfante = models.DecimalField(max_digits=8, decimal_places=2)
+    ppeInfante = models.DecimalField(max_digits=8, decimal_places=2)
+    estudianteP = models.DecimalField(max_digits=8, decimal_places=2)
+    estudianteE = models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
     def __eq__(self, other):
         if other is None:
@@ -212,9 +248,42 @@ class Boletos(models.Model):
         return values == other_values
     def __hash__(self):
         return super().__hash__()
+    
+@receiver(post_save,sender=Boleto)
+def createNotification(sender,instance,created,**kwargs):
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    if not created:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
+            Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un Boleto de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+        else:
+            print("WAA")
+    else:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
+            print("")
+        else:
+            Notification.objects.create(message=f"{instance.lastAccessUser} creo un Boleto {NicePrintInstance(instance)}  a las {currentTime}")
 
-class FichaTecnicaBoletos(Document):
-    Boletos = models.ForeignKey(Boletos,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
+
+@receiver(pre_save,sender=Boleto)
+def getUpdateNotification(sender,instance,**kwargs):
+    prev = None
+    if instance.id:
+       prev = sender.objects.get(id = instance.id)
+       # print("prev",prev)
+    instance.__prev = prev
+    print(instance.__prev)
+
+
+@receiver(post_delete,sender=Boleto)
+def getDeleteNotification(sender,instance,**kwargs):
+    # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    Notification.objects.create(message=f"{instance.lastAccessUser} borro un Boleto de {NicePrintInstance(instance)} a las {currentTime}")
+ 
 
 class Traslado(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
@@ -262,6 +331,41 @@ class Tren(models.Model):
     def __hash__(self):
         return super().__hash__()
 
+@receiver(post_save,sender=Tren)
+def createNotification(sender,instance,created,**kwargs):
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    if not created:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
+            Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un tren de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+        else:
+            print("WAA")
+    else:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
+            print("")
+        else:
+            Notification.objects.create(message=f"{instance.lastAccessUser} creo un tren {NicePrintInstance(instance)}  a las {currentTime}")
+
+
+@receiver(pre_save,sender=Tren)
+def getUpdateNotification(sender,instance,**kwargs):
+    prev = None
+    if instance.id:
+       prev = sender.objects.get(id = instance.id)
+       # print("prev",prev)
+    instance.__prev = prev
+    print(instance.__prev)
+
+
+@receiver(post_delete,sender=Tren)
+def getDeleteNotification(sender,instance,**kwargs):
+    # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    Notification.objects.create(message=f"{instance.lastAccessUser} borro un tren de {NicePrintInstance(instance)} a las {currentTime}")
+ 
  
 class Transporte(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
@@ -283,5 +387,156 @@ class Transporte(models.Model):
     def __hash__(self):
         return super().__hash__()
 
+@receiver(post_save,sender=Transporte)
+def createNotification(sender,instance,created,**kwargs):
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    if not created:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
+            Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un transporte de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+        else:
+            print("WAA")
+    else:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
+            print("")
+        else:
+            Notification.objects.create(message=f"{instance.lastAccessUser} creo un transporte {NicePrintInstance(instance)}  a las {currentTime}")
+
+
+@receiver(pre_save,sender=Transporte)
+def getUpdateNotification(sender,instance,**kwargs):
+    prev = None
+    if instance.id:
+       prev = sender.objects.get(id = instance.id)
+       # print("prev",prev)
+    instance.__prev = prev
+    print(instance.__prev)
+
+
+@receiver(post_delete,sender=Transporte)
+def getDeleteNotification(sender,instance,**kwargs):
+    # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    Notification.objects.create(message=f"{instance.lastAccessUser} borro un transporte de {NicePrintInstance(instance)} a las {currentTime}")
  
  
+class UpSelling(models.Model):
+    servicioProducto  = models.CharField(max_length =100,null=False,blank=False)
+    detalle = models.CharField(max_length =300,null=False,blank=False)
+    ppp = models.DecimalField(max_digits=8, decimal_places=2)
+    ppe = models.DecimalField(max_digits=8, decimal_places=2)
+    lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    def __eq__(self, other):
+        if other is None:
+            return True
+        # print("EQ")
+        values = [(k,v) for k,v in self.__dict__.items() if k != '_state']
+        other_values = [(k,v) for k,v in other.__dict__.items() if k != '_state']
+        # for i in values:
+        #     for e in other_values:
+        #         if i[1] != e[1]:
+        #             return False
+        return values == other_values
+    def __hash__(self):
+        return super().__hash__()
+
+@receiver(post_save,sender=UpSelling)
+def createNotification(sender,instance,created,**kwargs):
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    if not created:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
+            Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un UpSelling de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+        else:
+            print("WAA")
+    else:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
+            print("")
+        else:
+            Notification.objects.create(message=f"{instance.lastAccessUser} creo un UpSelling {NicePrintInstance(instance)}  a las {currentTime}")
+
+
+@receiver(pre_save,sender=UpSelling)
+def getUpdateNotification(sender,instance,**kwargs):
+    prev = None
+    if instance.id:
+       prev = sender.objects.get(id = instance.id)
+       # print("prev",prev)
+    instance.__prev = prev
+    print(instance.__prev)
+
+
+@receiver(post_delete,sender=UpSelling)
+def getDeleteNotification(sender,instance,**kwargs):
+    # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    Notification.objects.create(message=f"{instance.lastAccessUser} borro un UpSelling de {NicePrintInstance(instance)} a las {currentTime}")
+ 
+ 
+class Guiado(models.Model):
+    servicio  = models.CharField(max_length =100,null=False,blank=False)    
+    idioma = models.CharField(max_length =100,null=False,blank=False)    
+    detalle = models.CharField(max_length =300,null=False,blank=False)
+    ptapull = models.DecimalField(max_digits=8, decimal_places=2)
+    ptbpull = models.DecimalField(max_digits=8, decimal_places=2)
+    ptapriv = models.DecimalField(max_digits=8, decimal_places=2)
+    ptbpriv = models.DecimalField(max_digits=8, decimal_places=2)
+    lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    def __eq__(self, other):
+        if other is None:
+            return True
+        # print("EQ")
+        values = [(k,v) for k,v in self.__dict__.items() if k != '_state']
+        other_values = [(k,v) for k,v in other.__dict__.items() if k != '_state']
+        # for i in values:
+        #     for e in other_values:
+        #         if i[1] != e[1]:
+        #             return False
+        return values == other_values
+    def __hash__(self):
+        return super().__hash__()
+
+
+@receiver(post_save,sender=Guiado)
+def createNotification(sender,instance,created,**kwargs):
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    if not created:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
+            Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un Guiado de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+        else:
+            print("WAA")
+    else:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
+            print("")
+        else:
+            Notification.objects.create(message=f"{instance.lastAccessUser} creo un Guiado {NicePrintInstance(instance)}  a las {currentTime}")
+
+
+@receiver(pre_save,sender=Guiado)
+def getUpdateNotification(sender,instance,**kwargs):
+    prev = None
+    if instance.id:
+       prev = sender.objects.get(id = instance.id)
+       # print("prev",prev)
+    instance.__prev = prev
+    print(instance.__prev)
+
+
+@receiver(post_delete,sender=Guiado)
+def getDeleteNotification(sender,instance,**kwargs):
+    # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    Notification.objects.create(message=f"{instance.lastAccessUser} borro un Guiado de {NicePrintInstance(instance)} a las {currentTime}")
+ 
+
+
