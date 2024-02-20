@@ -306,6 +306,41 @@ class Traslado(models.Model):
     def __hash__(self):
         return super().__hash__()
 
+@receiver(post_save,sender=Traslado)
+def createNotification(sender,instance,created,**kwargs):
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    if not created:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
+            Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un traslado de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+        else:
+            print("WAA")
+    else:
+        if instance.__prev != instance:
+            # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
+            print("")
+        else:
+            Notification.objects.create(message=f"{instance.lastAccessUser} creo un traslado {NicePrintInstance(instance)}  a las {currentTime}")
+
+
+@receiver(pre_save,sender=Traslado)
+def getUpdateNotification(sender,instance,**kwargs):
+    prev = None
+    if instance.id:
+       prev = sender.objects.get(id = instance.id)
+       # print("prev",prev)
+    instance.__prev = prev
+    print(instance.__prev)
+
+
+@receiver(post_delete,sender=Traslado)
+def getDeleteNotification(sender,instance,**kwargs):
+    # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
+    current_datetime = datetime.now()
+    currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
+    Notification.objects.create(message=f"{instance.lastAccessUser} borro un traslado de {NicePrintInstance(instance)} a las {currentTime}")
+ 
 
 
 class Tren(models.Model):

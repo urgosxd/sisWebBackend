@@ -60,46 +60,6 @@ class TourModelSerializer(ModelSerializer):
             field.set(value)
 
         return instance
-class HotelModelSerializer(ModelSerializer):
-    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaHotel.objects.all())
-    class Meta:
-        model = Hotel
-        # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','clase','nombre','categoria','telefono','telefonoRecepcion','simple','doble','triple','horarioDesayuno','checkIn','checkOut','figma','fichasTecnicas']
-    def create(self,validated_data):
-        print(self.context['request'])
-        validated_data.pop('fichasTecnicas')
-        user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
-        return newInstance
-    def update(self, instance, validated_data):
-        raise_errors_on_nested_writes('update', self, validated_data)
-        info = model_meta.get_field_info(instance)
-        print(validated_data)
-
-        # Simply set each attribute on the instance, and then save it.
-        # Note that unlike `.create()` we don't need to treat many-to-many
-        # relationships as being a special case. During updates we already
-        # have an instance pk for the relationships to be associated with.
-        user = self.context['request'].user
-        m2m_fields = []
-        for attr, value in validated_data.items():
-            if attr in info.relations and info.relations[attr].to_many:
-                m2m_fields.append((attr, value))
-            else:
-                if attr == "lastAccessUser":
-                    attr = user
-                setattr(instance, attr, value)
-        instance.save()
-        
-        # Note that many-to-many fields are set after updating instance.
-        # Setting m2m fields triggers signals which could potentially change
-        # updated instance and we do not want it to collide with .update()
-        for attr, value in m2m_fields:
-            field = getattr(instance, attr)
-            field.set(value)
-
-        return instance
 
 class HotelModelSerializer(ModelSerializer):
     fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaHotel.objects.all())
@@ -111,7 +71,7 @@ class HotelModelSerializer(ModelSerializer):
         print(self.context['request'])
         validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = Hotel.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -147,12 +107,12 @@ class RestauranteModelSerializer(ModelSerializer):
     class Meta:
         model = Restaurante
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','nombre','especialidad','tipoDeServicio','horarioDeAtencion','direccion','telefonoReserva','telefonoRecepcion','precioMenu','precioMenuE','checkOut','figma','fichasTecnicas']
+        fields = ['id','ciudad','nombre','especialidad','tipoDeServicio','horarioDeAtencion','direccion','telefonoReserva','telefonoRecepcion','precioMenu','precioMenuE','figma','fichasTecnicas']
     def create(self,validated_data):
         print(self.context['request'])
         validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = Restaurante.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -193,7 +153,7 @@ class BoletoModelSerializer(ModelSerializer):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = Boleto.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -235,7 +195,7 @@ class TrasladoModelSerializer(ModelSerializer):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = Traslado.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -278,7 +238,7 @@ class TrenModelSerializer(ModelSerializer):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = Tren.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -309,7 +269,7 @@ class TrenModelSerializer(ModelSerializer):
 
         return instance
 
-class TrasnsporteModelSerializer(ModelSerializer):
+class TransporteModelSerializer(ModelSerializer):
     # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
     class Meta:
         model = Transporte
@@ -319,7 +279,7 @@ class TrasnsporteModelSerializer(ModelSerializer):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = Transporte.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -361,7 +321,7 @@ class UpSellingModelSerializer(ModelSerializer):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = UpSelling.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
@@ -402,7 +362,7 @@ class GuiadoModelSerializer(ModelSerializer):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
-        newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
+        newInstance = Guiado.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)

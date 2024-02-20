@@ -3,10 +3,10 @@ from dj_rest_auth.views import APIView, AllowAny, IsAuthenticated
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from rest_framework import status, viewsets
-from crud.models import FichaTecnica, Notification, Tour
+from crud.models import Boleto, FichaTecnica, Guiado, Hotel, Notification, Restaurante, Tour, Transporte, Traslado, Tren, UpSelling
 import tempfile
 import os
-from crud.serializer import FichaTecnicaSerializer, NotificationSerializer, TourModelSerializer
+from crud.serializer import BoletoModelSerializer, FichaTecnicaSerializer, GuiadoModelSerializer, HotelModelSerializer, NotificationSerializer, RestauranteModelSerializer, TourModelSerializer, TransporteModelSerializer, TrasladoModelSerializer, TrenModelSerializer, UpSellingModelSerializer
 from rest_framework.response import Response
 from django.db import transaction 
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -166,17 +166,766 @@ class NotificationView(viewsets.ModelViewSet):
 #         else:
 #             return JsonResponse({'error': 'No hay datos disponibles'}, status=404)
 
+class HotelView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = HotelModelSerializer
+    queryset = Hotel.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    def perform_create(self, serializer,files):
+        with transaction.atomic():
+            tour = serializer.save()
+            for i in files:
+                i["Hotel"] = tour.id
+                format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+                ext = format.split('/')[-1]  # guess file extension
+                i["Doc_Content"] = base64.b64decode(filestr)
+            ga= FichaTecnicaSerializer(data=files,many=True)
+            if ga.is_valid():
+                ga.save()
+            else:
+                print(ga.errors)
+                print("NOOO")
 
-
-
-
-    
-
-    
-
-
-
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        self.perform_create(serializer,json.loads(request.data["fichas"]))
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         
+        
+    def perform_update(self, serializer,files):
+        print(files)
+        if files is None:
+            serializer.save()
+        else:
+            with transaction.atomic():
+                tour = serializer.save()
+                fichasTour= tour.fichasTecnicas.all()
+                newFiles = []
+                for i in files:
+                    if i is not None:
+                        format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+                        ext = format.split('/')[-1]  # guess file extension
+                        i["Doc_Content"] = base64.b64decode(filestr)
+                        ficha = FichaTecnicaSerializer(data=i)
+                        if ficha.is_valid():
+                            newFiles.append(ficha.save())
+                        else:
+                            print(ficha.errors)
+                    else:
+                        newFiles.append(None)
+                while len(newFiles) < len(fichasTour):
+                    files.append(None)
+                newQuerySet = []
+                for a ,b in zip(fichasTour,newFiles):
+                    if b is not None:
+                        newQuerySet.append(b)
+                else:
+                    newQuerySet.append(a)
 
+                tour.fichasTecnicas.set(newQuerySet)
+                               
 
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        try:
+            self.perform_update(serializer,json.loads(request.data["fichas"]))
+        except:
+            self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
 
+        return Response(serializer.data)
+
+class RestauranteView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = RestauranteModelSerializer
+    queryset = Restaurante.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    def perform_create(self, serializer,files):
+        with transaction.atomic():
+            tour = serializer.save()
+            for i in files:
+                i["Restaurante"] = tour.id
+                format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+                ext = format.split('/')[-1]  # guess file extension
+                i["Doc_Content"] = base64.b64decode(filestr)
+            ga= FichaTecnicaSerializer(data=files,many=True)
+            if ga.is_valid():
+                ga.save()
+            else:
+                print(ga.errors)
+                print("NOOO")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        self.perform_create(serializer,json.loads(request.data["fichas"]))
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
+    def perform_update(self, serializer,files):
+        print(files)
+        if files is None:
+            serializer.save()
+        else:
+            with transaction.atomic():
+                tour = serializer.save()
+                fichasTour= tour.fichasTecnicas.all()
+                newFiles = []
+                for i in files:
+                    if i is not None:
+                        format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+                        ext = format.split('/')[-1]  # guess file extension
+                        i["Doc_Content"] = base64.b64decode(filestr)
+                        ficha = FichaTecnicaSerializer(data=i)
+                        if ficha.is_valid():
+                            newFiles.append(ficha.save())
+                        else:
+                            print(ficha.errors)
+                    else:
+                        newFiles.append(None)
+                while len(newFiles) < len(fichasTour):
+                    files.append(None)
+                newQuerySet = []
+                for a ,b in zip(fichasTour,newFiles):
+                    if b is not None:
+                        newQuerySet.append(b)
+                else:
+                    newQuerySet.append(a)
+
+                tour.fichasTecnicas.set(newQuerySet)
+                               
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        try:
+            self.perform_update(serializer,json.loads(request.data["fichas"]))
+        except:
+            self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+class BoletoView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = BoletoModelSerializer
+    queryset = Boleto.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    # def perform_create(self, serializer,files):
+    def perform_create(self, serializer):
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Restaurante"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer)
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
+    # def perform_update(self, serializer,files):
+    def perform_update(self, serializer):
+        serializer.save()
+        # print(files)
+        # if files is None:
+        #     serializer.save()
+        # else:
+        #     with transaction.atomic():
+        #         tour = serializer.save()
+        #         fichasTour= tour.fichasTecnicas.all()
+        #         newFiles = []
+        #         for i in files:
+        #             if i is not None:
+        #                 format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #                 ext = format.split('/')[-1]  # guess file extension
+        #                 i["Doc_Content"] = base64.b64decode(filestr)
+        #                 ficha = FichaTecnicaSerializer(data=i)
+        #                 if ficha.is_valid():
+        #                     newFiles.append(ficha.save())
+        #                 else:
+        #                     print(ficha.errors)
+        #             else:
+        #                 newFiles.append(None)
+        #         while len(newFiles) < len(fichasTour):
+        #             files.append(None)
+        #         newQuerySet = []
+        #         for a ,b in zip(fichasTour,newFiles):
+        #             if b is not None:
+        #                 newQuerySet.append(b)
+        #         else:
+        #             newQuerySet.append(a)
+
+        #         tour.fichasTecnicas.set(newQuerySet)
+                               
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        # try:
+        #     self.perform_update(serializer,json.loads(request.data["fichas"]))
+        # except:
+        #     self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+class TrasladoView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = TrasladoModelSerializer
+    queryset = Traslado.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    # def perform_create(self, serializer,files):
+    def perform_create(self, serializer):
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Restaurante"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer)
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
+    # def perform_update(self, serializer,files):
+    def perform_update(self, serializer):
+        serializer.save()
+        # print(files)
+        # if files is None:
+        #     serializer.save()
+        # else:
+        #     with transaction.atomic():
+        #         tour = serializer.save()
+        #         fichasTour= tour.fichasTecnicas.all()
+        #         newFiles = []
+        #         for i in files:
+        #             if i is not None:
+        #                 format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #                 ext = format.split('/')[-1]  # guess file extension
+        #                 i["Doc_Content"] = base64.b64decode(filestr)
+        #                 ficha = FichaTecnicaSerializer(data=i)
+        #                 if ficha.is_valid():
+        #                     newFiles.append(ficha.save())
+        #                 else:
+        #                     print(ficha.errors)
+        #             else:
+        #                 newFiles.append(None)
+        #         while len(newFiles) < len(fichasTour):
+        #             files.append(None)
+        #         newQuerySet = []
+        #         for a ,b in zip(fichasTour,newFiles):
+        #             if b is not None:
+        #                 newQuerySet.append(b)
+        #         else:
+        #             newQuerySet.append(a)
+
+        #         tour.fichasTecnicas.set(newQuerySet)
+                               
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        # try:
+        #     self.perform_update(serializer,json.loads(request.data["fichas"]))
+        # except:
+        #     self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+class TrenView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = TrenModelSerializer
+    queryset = Tren.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    # def perform_create(self, serializer,files):
+    def perform_create(self, serializer):
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Restaurante"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer)
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
+    # def perform_update(self, serializer,files):
+    def perform_update(self, serializer):
+        serializer.save()
+        # print(files)
+        # if files is None:
+        #     serializer.save()
+        # else:
+        #     with transaction.atomic():
+        #         tour = serializer.save()
+        #         fichasTour= tour.fichasTecnicas.all()
+        #         newFiles = []
+        #         for i in files:
+        #             if i is not None:
+        #                 format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #                 ext = format.split('/')[-1]  # guess file extension
+        #                 i["Doc_Content"] = base64.b64decode(filestr)
+        #                 ficha = FichaTecnicaSerializer(data=i)
+        #                 if ficha.is_valid():
+        #                     newFiles.append(ficha.save())
+        #                 else:
+        #                     print(ficha.errors)
+        #             else:
+        #                 newFiles.append(None)
+        #         while len(newFiles) < len(fichasTour):
+        #             files.append(None)
+        #         newQuerySet = []
+        #         for a ,b in zip(fichasTour,newFiles):
+        #             if b is not None:
+        #                 newQuerySet.append(b)
+        #         else:
+        #             newQuerySet.append(a)
+
+        #         tour.fichasTecnicas.set(newQuerySet)
+                               
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        # try:
+        #     self.perform_update(serializer,json.loads(request.data["fichas"]))
+        # except:
+        #     self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+class TransporteView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = TransporteModelSerializer
+    queryset = Transporte.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    # def perform_create(self, serializer,files):
+    def perform_create(self, serializer):
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Restaurante"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer)
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
+    # def perform_update(self, serializer,files):
+    def perform_update(self, serializer):
+        serializer.save()
+        # print(files)
+        # if files is None:
+        #     serializer.save()
+        # else:
+        #     with transaction.atomic():
+        #         tour = serializer.save()
+        #         fichasTour= tour.fichasTecnicas.all()
+        #         newFiles = []
+        #         for i in files:
+        #             if i is not None:
+        #                 format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #                 ext = format.split('/')[-1]  # guess file extension
+        #                 i["Doc_Content"] = base64.b64decode(filestr)
+        #                 ficha = FichaTecnicaSerializer(data=i)
+        #                 if ficha.is_valid():
+        #                     newFiles.append(ficha.save())
+        #                 else:
+        #                     print(ficha.errors)
+        #             else:
+        #                 newFiles.append(None)
+        #         while len(newFiles) < len(fichasTour):
+        #             files.append(None)
+        #         newQuerySet = []
+        #         for a ,b in zip(fichasTour,newFiles):
+        #             if b is not None:
+        #                 newQuerySet.append(b)
+        #         else:
+        #             newQuerySet.append(a)
+
+        #         tour.fichasTecnicas.set(newQuerySet)
+                               
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        # try:
+        #     self.perform_update(serializer,json.loads(request.data["fichas"]))
+        # except:
+        #     self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+class UpSellingView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = UpSellingModelSerializer
+    queryset = UpSelling.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    # def perform_create(self, serializer,files):
+    def perform_create(self, serializer):
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Restaurante"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer)
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
+    # def perform_update(self, serializer,files):
+    def perform_update(self, serializer):
+        serializer.save()
+        # print(files)
+        # if files is None:
+        #     serializer.save()
+        # else:
+        #     with transaction.atomic():
+        #         tour = serializer.save()
+        #         fichasTour= tour.fichasTecnicas.all()
+        #         newFiles = []
+        #         for i in files:
+        #             if i is not None:
+        #                 format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #                 ext = format.split('/')[-1]  # guess file extension
+        #                 i["Doc_Content"] = base64.b64decode(filestr)
+        #                 ficha = FichaTecnicaSerializer(data=i)
+        #                 if ficha.is_valid():
+        #                     newFiles.append(ficha.save())
+        #                 else:
+        #                     print(ficha.errors)
+        #             else:
+        #                 newFiles.append(None)
+        #         while len(newFiles) < len(fichasTour):
+        #             files.append(None)
+        #         newQuerySet = []
+        #         for a ,b in zip(fichasTour,newFiles):
+        #             if b is not None:
+        #                 newQuerySet.append(b)
+        #         else:
+        #             newQuerySet.append(a)
+
+        #         tour.fichasTecnicas.set(newQuerySet)
+                               
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        # try:
+        #     self.perform_update(serializer,json.loads(request.data["fichas"]))
+        # except:
+        #     self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+class GuiadoView(viewsets.ModelViewSet):
+    # permission_classes = []
+    serializer_class = GuiadoModelSerializer
+    queryset = Guiado.objects.all()
+    parser_classes = [MultiPartParser,FormParser,JSONParser]
+    # def get_queryset(self):
+    #     print(dir(self.request))
+    #     return Tour.objects.all()
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = []
+        else: 
+            permission_classes = [IsAuthenticated]
+        return [permision() for permision in permission_classes]
+    # def perform_create(self, serializer,files):
+    def perform_create(self, serializer):
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Restaurante"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data = request.data,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        # print(request.data["fichas"])
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer)
+        # print(serializer.errors)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        
+        
+    # def perform_update(self, serializer,files):
+    def perform_update(self, serializer):
+        serializer.save()
+        # print(files)
+        # if files is None:
+        #     serializer.save()
+        # else:
+        #     with transaction.atomic():
+        #         tour = serializer.save()
+        #         fichasTour= tour.fichasTecnicas.all()
+        #         newFiles = []
+        #         for i in files:
+        #             if i is not None:
+        #                 format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #                 ext = format.split('/')[-1]  # guess file extension
+        #                 i["Doc_Content"] = base64.b64decode(filestr)
+        #                 ficha = FichaTecnicaSerializer(data=i)
+        #                 if ficha.is_valid():
+        #                     newFiles.append(ficha.save())
+        #                 else:
+        #                     print(ficha.errors)
+        #             else:
+        #                 newFiles.append(None)
+        #         while len(newFiles) < len(fichasTour):
+        #             files.append(None)
+        #         newQuerySet = []
+        #         for a ,b in zip(fichasTour,newFiles):
+        #             if b is not None:
+        #                 newQuerySet.append(b)
+        #         else:
+        #             newQuerySet.append(a)
+
+        #         tour.fichasTecnicas.set(newQuerySet)
+                               
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial,context={'request':request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        # try:
+        #     self.perform_update(serializer,json.loads(request.data["fichas"]))
+        # except:
+        #     self.perform_update(serializer,None)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
