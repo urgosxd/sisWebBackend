@@ -148,7 +148,7 @@ class BoletoModelSerializer(ModelSerializer):
     class Meta:
         model = Boleto
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','servicio','pppAdulto','ppeAdulto','pppNinio','ppeNinio','pppInfante','ppeInfante','estudinateP','estudianteE']
+        fields = ['id','ciudad','servicio','pppAdulto','ppeAdulto','pppNinio','ppeNinio','pppInfante','ppeInfante','estudianteP','estudianteE']
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -316,7 +316,7 @@ class UpSellingModelSerializer(ModelSerializer):
     class Meta:
         model = UpSelling
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','servicioProducto','servicio','detalle','ppp','ppe']
+        fields = ['id','servicioProducto','detalle','ppp','ppe']
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')

@@ -349,7 +349,7 @@ class Tren(models.Model):
     ruta = models.CharField(max_length =100,null=False,blank=False)
     categoria = models.CharField(max_length =100,null=False,blank=False)
     precioAdulto = models.DecimalField(max_digits=8, decimal_places=2)
-    precioNino = models.DecimalField(max_digits=8, decimal_places=2)
+    precioNinio = models.DecimalField(max_digits=8, decimal_places=2)
     precioInfante = models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
     def __eq__(self, other):
