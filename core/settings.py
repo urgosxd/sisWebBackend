@@ -151,7 +151,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(minutes=10),
     'ROTATE_REFRESH_TOKENS': True, 
     # 'BLACKLIST_AFTER_ROTATION': True, 
-    'UPDATE_LAST_LOGIN': True,
+    # 'UPDATE_LAST_LOGIN': True,
     "USER_ID_FIELD": "id",  # for the custom user model
     "USER_ID_CLAIM": "id",
     "SIGNING_KEY": SECRET_KEY
