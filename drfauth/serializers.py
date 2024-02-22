@@ -35,7 +35,7 @@ class CustomLoginSerializer(LoginSerializer):
         attrs["user"] = user
         return attrs
 class CustomRegisterSerializer(RegisterSerializer):
-    role = serializers.CharField(max_length=10)
+    role = serializers.CharField(max_length=30)
     def get_cleaned_data(self):
         data_dict = super().get_cleaned_data()
         data_dict['role'] = self.validated_data.get('role', '')
