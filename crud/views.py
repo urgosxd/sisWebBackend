@@ -2,6 +2,7 @@ import base64
 from dj_rest_auth.views import APIView, AllowAny, IsAuthenticated
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from requests import delete
 from rest_framework import status, viewsets
 from crud.models import Boleto, FichaTecnica, Guiado, Hotel, Notification, Restaurante, Tour, Transporte, Traslado, Tren, UpSelling
 import tempfile
@@ -106,6 +107,12 @@ class TourView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 
  # class FichaTecnicaView(viewsets.ModelViewSet):
@@ -256,6 +263,11 @@ class HotelView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 class RestauranteView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -347,6 +359,11 @@ class RestauranteView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 class BoletoView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -444,6 +461,11 @@ class BoletoView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 class TrasladoView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -541,6 +563,11 @@ class TrasladoView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 class TrenView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -638,6 +665,11 @@ class TrenView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 class TransporteView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -735,6 +767,11 @@ class TransporteView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 class UpSellingView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -832,6 +869,11 @@ class UpSellingView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
 
 class GuiadoView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -929,3 +971,8 @@ class GuiadoView(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"ga","res"})
+
