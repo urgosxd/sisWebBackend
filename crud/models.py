@@ -46,7 +46,7 @@ def NicePrintInstance(instance):
     return values
 
 @receiver(post_save,sender=Tour)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationTour(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -58,23 +58,23 @@ def createNotification(sender,instance,created,**kwargs):
     else:
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.ciudad} a {instance.ciudad}  a las {datetime.now()}")
-            print("")
+            print("weee")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un tour {NicePrintInstance(instance)}  a las {currentTime}")
 
 
 @receiver(pre_save,sender=Tour)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationTour(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
        # print("prev",prev)
     instance.__prev = prev
-    print(instance.__prev)
+    NicePrintInstance(instance.__prev)
 
 
 @receiver(post_delete,sender=Tour)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationTour(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -122,7 +122,7 @@ class FichaTecnicaHotel(Document):
     Hotel = models.ForeignKey(Hotel,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
 
 @receiver(post_save,sender=Hotel)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationHotel(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -140,7 +140,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=Hotel)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationHotel(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -150,7 +150,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=Hotel)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationHotel(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -188,7 +188,7 @@ class Restaurante(models.Model):
         return super().__hash__()
 
 @receiver(post_save,sender=Restaurante)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationRest(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -206,7 +206,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=Restaurante)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationRest(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -216,7 +216,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=Restaurante)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationRest(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -253,7 +253,7 @@ class Boleto(models.Model):
         return super().__hash__()
     
 @receiver(post_save,sender=Boleto)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationBoleto(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -271,7 +271,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=Boleto)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationBoleto(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -281,7 +281,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=Boleto)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationBoleto(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -310,7 +310,7 @@ class Traslado(models.Model):
         return super().__hash__()
 
 @receiver(post_save,sender=Traslado)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationTras(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -328,7 +328,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=Traslado)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationTras(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -338,7 +338,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=Traslado)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationTras(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -370,7 +370,7 @@ class Tren(models.Model):
         return super().__hash__()
 
 @receiver(post_save,sender=Tren)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationTren(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -388,7 +388,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=Tren)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationTren(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -398,7 +398,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=Tren)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationTren(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -426,7 +426,7 @@ class Transporte(models.Model):
         return super().__hash__()
 
 @receiver(post_save,sender=Transporte)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationTrans(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -444,7 +444,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=Transporte)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationTrans(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -454,7 +454,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=Transporte)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationTrans(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -482,7 +482,7 @@ class UpSelling(models.Model):
         return super().__hash__()
 
 @receiver(post_save,sender=UpSelling)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationUps(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -500,7 +500,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=UpSelling)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationUps(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -510,7 +510,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=UpSelling)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationUps(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
@@ -542,7 +542,7 @@ class Guiado(models.Model):
 
 
 @receiver(post_save,sender=Guiado)
-def createNotification(sender,instance,created,**kwargs):
+def createNotificationGuia(sender,instance,created,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     if not created:
@@ -560,7 +560,7 @@ def createNotification(sender,instance,created,**kwargs):
 
 
 @receiver(pre_save,sender=Guiado)
-def getUpdateNotification(sender,instance,**kwargs):
+def getUpdateNotificationGuia(sender,instance,**kwargs):
     prev = None
     if instance.id:
        prev = sender.objects.get(id = instance.id)
@@ -570,7 +570,7 @@ def getUpdateNotification(sender,instance,**kwargs):
 
 
 @receiver(post_delete,sender=Guiado)
-def getDeleteNotification(sender,instance,**kwargs):
+def getDeleteNotificationGuia(sender,instance,**kwargs):
     # print(f"{instance.lastAccessUser} borro un tour de {instance.__dict__}")
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
