@@ -26,6 +26,7 @@ class Tour(models.Model):
     pvp = models.DecimalField(max_digits=8, decimal_places=2)
     pve = models.DecimalField(max_digits=8, decimal_places=2)
     figma = models.CharField(max_length =250,null=False,blank=False)
+    drive = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
     def __eq__(self, other):
         if other is None:
@@ -100,6 +101,7 @@ class Hotel(models.Model):
     checkIn = models.TimeField()
     checkOut = models.TimeField()
     figma = models.CharField(max_length =250,null=False,blank=False)
+    drive = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
     def __eq__(self, other):
         if other is None:
@@ -169,6 +171,7 @@ class Restaurante(models.Model):
     precioMenu = models.DecimalField(max_digits=8, decimal_places=2)
     precioMenuE = models.DecimalField(max_digits=8, decimal_places=2)
     figma = models.CharField(max_length =250,null=False,blank=False)
+    drive = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
     def __eq__(self, other):
         if other is None:

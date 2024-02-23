@@ -25,7 +25,8 @@ class TourModelSerializer(ModelSerializer):
     class Meta:
         model = Tour
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','excursion','provedor','ppp','ppe','pvp','pve','figma','fichasTecnicas']
+        # fields = ['id','ciudad','excursion','provedor','ppp','ppe','pvp','pve','figma','fichasTecnicas']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         validated_data.pop('fichasTecnicas')
@@ -66,7 +67,8 @@ class HotelModelSerializer(ModelSerializer):
     class Meta:
         model = Hotel
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','clase','nombre','categoria','telefono','telefonoRecepcion','simple','doble','triple','horarioDesayuno','checkIn','checkOut','figma','fichasTecnicas']
+        # fields = ['id','ciudad','clase','nombre','categoria','telefono','telefonoRecepcion','simple','doble','triple','horarioDesayuno','checkIn','checkOut','figma','fichasTecnicas']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         validated_data.pop('fichasTecnicas')
@@ -107,7 +109,8 @@ class RestauranteModelSerializer(ModelSerializer):
     class Meta:
         model = Restaurante
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','nombre','especialidad','tipoDeServicio','horarioDeAtencion','direccion','telefonoReserva','telefonoRecepcion','precioMenu','precioMenuE','figma','fichasTecnicas']
+        # fields = ['id','ciudad','nombre','especialidad','tipoDeServicio','horarioDeAtencion','direccion','telefonoReserva','telefonoRecepcion','precioMenu','precioMenuE','figma','fichasTecnicas']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         validated_data.pop('fichasTecnicas')
@@ -148,7 +151,8 @@ class BoletoModelSerializer(ModelSerializer):
     class Meta:
         model = Boleto
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','servicio','pppAdulto','ppeAdulto','pppNinio','ppeNinio','pppInfante','ppeInfante','estudianteP','estudianteE']
+        # fields = ['id','ciudad','servicio','pppAdulto','ppeAdulto','pppNinio','ppeNinio','pppInfante','ppeInfante','estudianteP','estudianteE']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -190,7 +194,8 @@ class TrasladoModelSerializer(ModelSerializer):
     class Meta:
         model = Traslado
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','servicio','tipoDeVehiculo','ppp','ppe']
+        # fields = ['id','ciudad','servicio','tipoDeVehiculo','ppp','ppe']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -233,7 +238,8 @@ class TrenModelSerializer(ModelSerializer):
     class Meta:
         model = Tren
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','empresa','ruta','categoria','precioAdulto','precioNinio','precioInfante']
+        # fields = ['id','ciudad','empresa','ruta','categoria','precioAdulto','precioNinio','precioInfante']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -274,7 +280,8 @@ class TransporteModelSerializer(ModelSerializer):
     class Meta:
         model = Transporte
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','servicio','ppp','ppe']
+        # fields = ['id','ciudad','servicio','ppp','ppe']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -316,7 +323,8 @@ class UpSellingModelSerializer(ModelSerializer):
     class Meta:
         model = UpSelling
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','servicioProducto','detalle','ppp','ppe']
+        # fields = ['id','servicioProducto','detalle','ppp','ppe']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -357,7 +365,8 @@ class GuiadoModelSerializer(ModelSerializer):
     class Meta:
         model = Guiado
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','servicio','idioma','detalle','ptapull','ptbpull','ptapriv','ptbpriv']
+        # fields = ['id','servicio','idioma','detalle','ptapull','ptbpull','ptapriv','ptbpriv']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
