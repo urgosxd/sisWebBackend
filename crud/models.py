@@ -70,7 +70,7 @@ def getUpdateNotificationTour(sender,instance,**kwargs):
        prev = sender.objects.get(id = instance.id)
        # print("prev",prev)
     instance.__prev = prev
-    NicePrintInstance(instance.__prev)
+    print(instance.__prev)
 
 
 @receiver(post_delete,sender=Tour)
