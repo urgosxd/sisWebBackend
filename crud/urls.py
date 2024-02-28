@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from crud.views import BoletoView, FichaTecnicaView, GuiadoView, HotelView, RestauranteView, TourView,NotificationView, TransporteView, TrasladoView, TrenView, UpSellingView
+from crud.views import BoletoView, FichaTecnicaView, GuiadoView, HotelView, RestauranteView, TourView,NotificationView, TransporteView, TrasladoView, TrenView, UpSellingView,CleanTour
 from rest_framework import routers
 
 
@@ -45,6 +45,7 @@ router11.register(r'guiado',GuiadoView,'guiado')
 
 urlpatterns = [
         path("tours/",include(router2.urls)),
+        path("tours/tour/clean/<int:pk>/",CleanTour.as_view(),name="clean_tour"),
         path("fichaTecnica/",include(router.urls)),
         path("notification/",include(router3.urls)),
         path("hoteles/",include(router4.urls)),

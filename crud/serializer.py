@@ -25,7 +25,7 @@ class TourModelSerializer(ModelSerializer):
     class Meta:
         model = Tour
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','excursion','provedor','ppp','ppe','pvp','pve','figma','drive','fichasTecnicas']
+        fields = ['id','ciudad','excursion','provedor','ppp','ppe','pvp','pve','figma','drive','fichasTecnicas','currentUser']
         # fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])

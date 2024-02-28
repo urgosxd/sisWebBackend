@@ -114,6 +114,13 @@ class TourView(viewsets.ModelViewSet):
         return Response({"ga","res"})
 
 
+class CleanTour(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        Tour.objects.filter(id=pk).update(currentUser=None)
+        return Response({"ga","res"})
+
+
 
  # class FichaTecnicaView(viewsets.ModelViewSet):
     # permission_classes = []

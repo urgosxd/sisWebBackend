@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.dispatch import receiver
@@ -28,6 +29,8 @@ class Tour(models.Model):
     figma = models.CharField(max_length =250,null=False,blank=False)
     drive = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUser")
+    lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
             return True
@@ -53,6 +56,7 @@ def createNotificationTour(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un tour de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -61,6 +65,7 @@ def createNotificationTour(sender,instance,created,**kwargs):
             print("weee")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un tour {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Tour)
@@ -79,6 +84,7 @@ def getDeleteNotificationTour(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un tour de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
     
 
 class FichaTecnica(Document):
