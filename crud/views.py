@@ -117,8 +117,18 @@ class TourView(viewsets.ModelViewSet):
 class CleanTour(APIView):
     permission_classes= [IsAuthenticated]
     def put(self,request,pk,format=None):
-        Tour.objects.filter(id=pk).update(currentUser=None)
-        return Response({"ga","res"})
+        print(request.data)
+        if request.data == "None":
+            Tour.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Tour.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
+
+# class UpdateCurrentTour(APIView):
+#     permission_classes= [IsAuthenticated]
+#     def put(self,request,pk,format=None):
+#         Tour.objects.filter(id=pk).update(current)
 
 
 
