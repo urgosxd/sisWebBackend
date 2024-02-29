@@ -25,11 +25,11 @@ class TourModelSerializer(ModelSerializer):
     class Meta:
         model = Tour
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','excursion','provedor','ppp','ppe','pvp','pve','figma','drive','fichasTecnicas','currentUser']
-        # fields = '__all__'
+        # fields = ['id','ciudad','excursion','provedor','pe','ppp','ppe','pvp','pve','figma','drive','fichasTecnicas','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
-        validated_data.pop('fichasTecnicas')
+        # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
         newInstance = Tour.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
@@ -67,11 +67,11 @@ class HotelModelSerializer(ModelSerializer):
     class Meta:
         model = Hotel
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','clase','nombre','categoria','telefono','telefonoRecepcion','simple','doble','triple','horarioDesayuno','checkIn','checkOut','figma','drive','fichasTecnicas']
-        # fields = '__all__'
+        # fields = ['id','ciudad','clase','nombre','categoria','telefono','telefonoRecepcion','simple','doble','triple','horarioDesayuno','checkIn','checkOut','figma','drive','fichasTecnicas','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
-        validated_data.pop('fichasTecnicas')
+        # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
         newInstance = Hotel.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
@@ -109,11 +109,11 @@ class RestauranteModelSerializer(ModelSerializer):
     class Meta:
         model = Restaurante
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','nombre','especialidad','tipoDeServicio','horarioDeAtencion','direccion','telefonoReserva','telefonoRecepcion','precioMenu','precioMenuE','figma','drive','fichasTecnicas']
-        # fields = '__all__'
+        # fields = ['id','ciudad','nombre','especialidad','tipoDeServicio','horarioDeAtencion','direccion','telefonoReserva','telefonoRecepcion','precioMenu','precioMenuE','figma','drive','fichasTecnicas','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
-        validated_data.pop('fichasTecnicas')
+        # validated_data.pop('fichasTecnicas')
         user = self.context['request'].user
         newInstance = Restaurante.objects.create(lastAccessUser=user,**validated_data)
         return newInstance
@@ -151,8 +151,8 @@ class BoletoModelSerializer(ModelSerializer):
     class Meta:
         model = Boleto
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','servicio','pppAdulto','ppeAdulto','pppNinio','ppeNinio','pppInfante','ppeInfante','estudianteP','estudianteE']
-        # fields = '__all__'
+        # fields = ['id','ciudad','servicio','pppAdulto','ppeAdulto','pppNinio','ppeNinio','pppInfante','ppeInfante','estudianteP','estudianteE','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -194,8 +194,8 @@ class TrasladoModelSerializer(ModelSerializer):
     class Meta:
         model = Traslado
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','servicio','tipoDeVehiculo','ppp','ppe']
-        # fields = '__all__'
+        # fields = ['id','ciudad','servicio','tipoDeVehiculo','ppp','ppe','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -238,8 +238,8 @@ class TrenModelSerializer(ModelSerializer):
     class Meta:
         model = Tren
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','empresa','ruta','categoria','precioAdulto','precioNinio','precioInfante']
-        # fields = '__all__'
+        # fields = ['id','ciudad','empresa','ruta','categoria','precioAdulto','precioNinio','precioInfante','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -280,8 +280,8 @@ class TransporteModelSerializer(ModelSerializer):
     class Meta:
         model = Transporte
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','ciudad','servicio','ppp','ppe']
-        # fields = '__all__'
+        # fields = ['id','ciudad','servicio','ppp','ppe','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -291,7 +291,7 @@ class TransporteModelSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
         info = model_meta.get_field_info(instance)
-        print(validated_data)
+        # print(validated_data)
 
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
@@ -323,8 +323,8 @@ class UpSellingModelSerializer(ModelSerializer):
     class Meta:
         model = UpSelling
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','servicioProducto','detalle','ppp','ppe']
-        # fields = '__all__'
+        # fields = ['id','servicioProducto','detalle','ppp','ppe','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')
@@ -334,7 +334,7 @@ class UpSellingModelSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
         info = model_meta.get_field_info(instance)
-        print(validated_data)
+        # print(validated_data)
 
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
@@ -365,8 +365,8 @@ class GuiadoModelSerializer(ModelSerializer):
     class Meta:
         model = Guiado
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
-        fields = ['id','servicio','idioma','detalle','ptapull','ptbpull','ptapriv','ptbpriv']
-        # fields = '__all__'
+        # fields = ['id','servicio','idioma','detalle','ptapull','ptbpull','ptapriv','ptbpriv','currentUser']
+        fields = '__all__'
     def create(self,validated_data):
         print(self.context['request'])
         # validated_data.pop('fichasTecnicas')

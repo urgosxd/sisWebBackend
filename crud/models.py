@@ -22,14 +22,16 @@ class Tour(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
     excursion = models.CharField(max_length =100,null=False,blank=False)
     provedor = models.CharField(max_length =100,null=False,blank=False)
+    pe = models.DecimalField(max_digits=8, decimal_places=2)
     ppp = models.DecimalField(max_digits=8, decimal_places=2)
     ppe = models.DecimalField(max_digits=8, decimal_places=2)
     pvp = models.DecimalField(max_digits=8, decimal_places=2)
     pve = models.DecimalField(max_digits=8, decimal_places=2)
-    figma = models.CharField(max_length =250,null=False,blank=False)
-    drive = models.CharField(max_length =250,null=False,blank=False)
+    recomendacionesImagen = models.CharField(max_length =250,null=False,blank=False)
+    fichaTecnica = models.CharField(max_length =250,null=False,blank=False)
+    pdfProveedor = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
-    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUser")
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserTour")
     lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
@@ -98,17 +100,22 @@ class Hotel(models.Model):
     clase = models.CharField(max_length =100,null=False,blank=False)
     nombre = models.CharField(max_length =100,null=False,blank=False)
     categoria = models.CharField(max_length =100,null=False,blank=False)
-    telefono = models.CharField(max_length =100,null=False,blank=False)
+    telefonoReserva = models.CharField(max_length =100,null=False,blank=False)
     telefonoRecepcion = models.CharField(max_length =100,null=False,blank=False)
+    precioConfidencial = models.DecimalField(max_digits=8, decimal_places=2)
     simple = models.DecimalField(max_digits=8, decimal_places=2)
     doble = models.DecimalField(max_digits=8, decimal_places=2)
     triple = models.DecimalField(max_digits=8, decimal_places=2)
-    horarioDesayuno = models.TimeField()
+    horarioDesayunoInicio = models.TimeField()
+    horarioDesayunoFinal = models.TimeField()
     checkIn = models.TimeField()
     checkOut = models.TimeField()
-    figma = models.CharField(max_length =250,null=False,blank=False)
-    drive = models.CharField(max_length =250,null=False,blank=False)
+    fichaTecnica = models.CharField(max_length =250,null=False,blank=False)
+    pdfProveedor = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserHotel")
+    lastModify = models.DateTimeField(default=timezone.now())
+
     def __eq__(self, other):
         if other is None:
             return True
@@ -135,6 +142,7 @@ def createNotificationHotel(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un hotel de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -143,6 +151,7 @@ def createNotificationHotel(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un hotel {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Hotel)
@@ -161,6 +170,7 @@ def getDeleteNotificationHotel(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un hotel de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
     
 
 
@@ -168,17 +178,21 @@ def getDeleteNotificationHotel(sender,instance,**kwargs):
 class Restaurante(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
     nombre = models.CharField(max_length =100,null=False,blank=False)
+    categoria = models.CharField(max_length =100,null=False,blank=False)
     especialidad = models.CharField(max_length =100,null=False,blank=False)
     tipoDeServicio = models.CharField(max_length =100,null=False,blank=False)
     horarioDeAtencion = models.CharField(max_length =100,null=False,blank=False)
     direccion = models.CharField(max_length =100,null=False,blank=False)
     telefonoReserva = models.CharField(max_length =100,null=False,blank=False)
     telefonoRecepcion = models.CharField(max_length =100,null=False,blank=False)
+    precioCarta = models.DecimalField(max_digits=8, decimal_places=2)
     precioMenu = models.DecimalField(max_digits=8, decimal_places=2)
-    precioMenuE = models.DecimalField(max_digits=8, decimal_places=2)
-    figma = models.CharField(max_length =250,null=False,blank=False)
-    drive = models.CharField(max_length =250,null=False,blank=False)
+    fichaTecnica = models.CharField(max_length =250,null=False,blank=False)
+    pdfProveedor = models.CharField(max_length =250,null=False,blank=False)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserRest")
+    lastModify = models.DateTimeField(default=timezone.now())
+
     def __eq__(self, other):
         if other is None:
             return True
@@ -201,6 +215,7 @@ def createNotificationRest(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un Restaurante de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -209,6 +224,7 @@ def createNotificationRest(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un Restaurante {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Restaurante)
@@ -227,6 +243,7 @@ def getDeleteNotificationRest(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un Restaurante de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
 class FichaTecnicaRestaurante(Document):
     Restaurante = models.ForeignKey(Restaurante,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
@@ -235,15 +252,17 @@ class FichaTecnicaRestaurante(Document):
 class Boleto(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
     servicio = models.CharField(max_length =100,null=False,blank=False)
-    pppAdulto = models.DecimalField(max_digits=8, decimal_places=2)
-    ppeAdulto = models.DecimalField(max_digits=8, decimal_places=2)
-    pppNinio = models.DecimalField(max_digits=8, decimal_places=2)
-    ppeNinio = models.DecimalField(max_digits=8, decimal_places=2)
-    pppInfante = models.DecimalField(max_digits=8, decimal_places=2)
-    ppeInfante = models.DecimalField(max_digits=8, decimal_places=2)
-    estudianteP = models.DecimalField(max_digits=8, decimal_places=2)
-    estudianteE = models.DecimalField(max_digits=8, decimal_places=2)
+    adultop = models.DecimalField(max_digits=8, decimal_places=2)
+    adultoe = models.DecimalField(max_digits=8, decimal_places=2)
+    niniop = models.DecimalField(max_digits=8, decimal_places=2)
+    ninioe = models.DecimalField(max_digits=8, decimal_places=2)
+    infantep = models.DecimalField(max_digits=8, decimal_places=2)
+    infantee = models.DecimalField(max_digits=8, decimal_places=2)
+    estudiantePeruano = models.DecimalField(max_digits=8, decimal_places=2)
+    estudianteExtranjero = models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserBoleto")
+    lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
             return True
@@ -266,6 +285,7 @@ def createNotificationBoleto(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un Boleto de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -274,6 +294,7 @@ def createNotificationBoleto(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un Boleto {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Boleto)
@@ -292,15 +313,17 @@ def getDeleteNotificationBoleto(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un Boleto de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
 
 class Traslado(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
     servicio = models.CharField(max_length =100,null=False,blank=False)
     tipoDeVehiculo = models.CharField(max_length =100,null=False,blank=False)
-    ppp = models.DecimalField(max_digits=8, decimal_places=2)
-    ppe = models.DecimalField(max_digits=8, decimal_places=2)
+    precio =  models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserTraslado")
+    lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
             return True
@@ -323,6 +346,7 @@ def createNotificationTras(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un traslado de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -331,6 +355,7 @@ def createNotificationTras(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un traslado {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Traslado)
@@ -349,6 +374,7 @@ def getDeleteNotificationTras(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un traslado de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
 
 
@@ -357,10 +383,12 @@ class Tren(models.Model):
     empresa = models.CharField(max_length =100,null=False,blank=False)
     ruta = models.CharField(max_length =100,null=False,blank=False)
     categoria = models.CharField(max_length =100,null=False,blank=False)
-    precioAdulto = models.DecimalField(max_digits=8, decimal_places=2)
-    precioNinio = models.DecimalField(max_digits=8, decimal_places=2)
-    precioInfante = models.DecimalField(max_digits=8, decimal_places=2)
+    adulto = models.DecimalField(max_digits=8, decimal_places=2)
+    ninio = models.DecimalField(max_digits=8, decimal_places=2)
+    infante = models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserTren")
+    lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
             return True
@@ -383,6 +411,7 @@ def createNotificationTren(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un tren de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -391,6 +420,7 @@ def createNotificationTren(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un tren {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Tren)
@@ -409,14 +439,16 @@ def getDeleteNotificationTren(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un tren de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
  
 class Transporte(models.Model):
     ciudad = models.CharField(max_length =100,null=False,blank=False)
     servicio = models.CharField(max_length =100,null=False,blank=False)
-    ppp = models.DecimalField(max_digits=8, decimal_places=2)
-    ppe = models.DecimalField(max_digits=8, decimal_places=2)
+    precio = models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserTransporte")
+    lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
             return True
@@ -439,6 +471,7 @@ def createNotificationTrans(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un transporte de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -447,6 +480,7 @@ def createNotificationTrans(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un transporte {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Transporte)
@@ -465,14 +499,19 @@ def getDeleteNotificationTrans(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un transporte de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
  
 class UpSelling(models.Model):
     servicioProducto  = models.CharField(max_length =100,null=False,blank=False)
     detalle = models.CharField(max_length =300,null=False,blank=False)
-    ppp = models.DecimalField(max_digits=8, decimal_places=2)
-    ppe = models.DecimalField(max_digits=8, decimal_places=2)
+    pnp = models.DecimalField(max_digits=8, decimal_places=2)
+    pne = models.DecimalField(max_digits=8, decimal_places=2)
+    pvp = models.DecimalField(max_digits=8, decimal_places=2)
+    pve = models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserUpselling")
+    lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
             return True
@@ -495,6 +534,7 @@ def createNotificationUps(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un UpSelling de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -503,6 +543,7 @@ def createNotificationUps(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un UpSelling {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=UpSelling)
@@ -521,17 +562,20 @@ def getDeleteNotificationUps(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un UpSelling de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
  
 class Guiado(models.Model):
     servicio  = models.CharField(max_length =100,null=False,blank=False)    
     idioma = models.CharField(max_length =100,null=False,blank=False)    
     detalle = models.CharField(max_length =300,null=False,blank=False)
-    ptapull = models.DecimalField(max_digits=8, decimal_places=2)
-    ptbpull = models.DecimalField(max_digits=8, decimal_places=2)
-    ptapriv = models.DecimalField(max_digits=8, decimal_places=2)
-    ptbpriv = models.DecimalField(max_digits=8, decimal_places=2)
+    precioPullp = models.DecimalField(max_digits=8, decimal_places=2)
+    precioPulle = models.DecimalField(max_digits=8, decimal_places=2)
+    precioPrivadop = models.DecimalField(max_digits=8, decimal_places=2)
+    precioPrivadoe = models.DecimalField(max_digits=8, decimal_places=2)
     lastAccessUser = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True)
+    currentUser = models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,null=True,related_name="currentUserGuiado")
+    lastModify = models.DateTimeField(default=timezone.now())
     def __eq__(self, other):
         if other is None:
             return True
@@ -555,6 +599,7 @@ def createNotificationGuia(sender,instance,created,**kwargs):
         if instance.__prev != instance:
             # print(f"{instance.lastAccessUser} actualizo un tour de {instance.__prev.__dict__} a {instance.__dict__}  a las {currentTime}")
             Notification.objects.create(message=f"{instance.lastAccessUser} actualizo un Guiado de {NicePrintInstance(instance.__prev)} a {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
         else:
             print("WAA")
     else:
@@ -563,6 +608,7 @@ def createNotificationGuia(sender,instance,created,**kwargs):
             print("")
         else:
             Notification.objects.create(message=f"{instance.lastAccessUser} creo un Guiado {NicePrintInstance(instance)}  a las {currentTime}")
+            sender.objects.filter(id = instance.id).update(lastModify=current_datetime,currentUser=instance.lastAccessUser)
 
 
 @receiver(pre_save,sender=Guiado)
@@ -581,6 +627,7 @@ def getDeleteNotificationGuia(sender,instance,**kwargs):
     current_datetime = datetime.now()
     currentTime = current_datetime.strftime("%m/%d/%Y, %H:%M:%S")
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un Guiado de {NicePrintInstance(instance)} a las {currentTime}")
+    sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
 
 
