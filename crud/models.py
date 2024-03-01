@@ -4,7 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models.signals import post_save,pre_save,post_delete
-from django_currentuser.middleware import (get_current_user, get_current_authenticated_user)
+# from django_currentuser.middleware import (get_current_user, get_current_authenticated_user)
 import json
 
 # Create your models here.
@@ -89,8 +89,8 @@ def getDeleteNotificationTour(sender,instance,**kwargs):
     sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
     
 
-class FichaTecnica(Document):
-    Tour = models.ForeignKey(Tour,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
+# class FichaTecnica(Document):
+#     Tour = models.ForeignKey(Tour,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
 
 
 
@@ -131,8 +131,8 @@ class Hotel(models.Model):
         return super().__hash__()
 
 
-class FichaTecnicaHotel(Document):
-    Hotel = models.ForeignKey(Hotel,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
+# class FichaTecnicaHotel(Document):
+#     Hotel = models.ForeignKey(Hotel,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
 
 @receiver(post_save,sender=Hotel)
 def createNotificationHotel(sender,instance,created,**kwargs):
@@ -245,8 +245,8 @@ def getDeleteNotificationRest(sender,instance,**kwargs):
     Notification.objects.create(message=f"{instance.lastAccessUser} borro un Restaurante de {NicePrintInstance(instance)} a las {currentTime}")
     sender.objects.filter(id = instance.id).update(lastModify=current_datetime)
  
-class FichaTecnicaRestaurante(Document):
-    Restaurante = models.ForeignKey(Restaurante,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
+# class FichaTecnicaRestaurante(Document):
+#     Restaurante = models.ForeignKey(Restaurante,on_delete=models.CASCADE,related_name="fichasTecnicas",null=True)
 
 
 class Boleto(models.Model):

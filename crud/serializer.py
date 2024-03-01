@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, raise_errors_on_nested_writes
 from rest_framework.utils import model_meta
-from crud.models import Boleto, FichaTecnica, FichaTecnicaHotel, FichaTecnicaRestaurante, Guiado, Hotel, Notification, Restaurante, Tour, Transporte, Traslado, Tren, UpSelling
+from crud.models import Boleto, Guiado, Hotel, Notification, Restaurante, Tour, Transporte, Traslado, Tren, UpSelling
 from rest_framework import serializers
 import base64
 
@@ -10,18 +10,18 @@ class BinaryField(serializers.Field):
     def to_internal_value(self, value):
          return value
 
-class FichaTecnicaSerializer(ModelSerializer):
-    class Meta:
-        model = FichaTecnica
-        fields='__all__'
-    Doc_Content = BinaryField()
+# class FichaTecnicaSerializer(ModelSerializer):
+#     class Meta:
+#         model = FichaTecnica
+#         fields='__all__'
+#     Doc_Content = BinaryField()
 
 class NotificationSerializer(ModelSerializer):
     class Meta:
         model = Notification
         fields = '__all__'
 class TourModelSerializer(ModelSerializer):
-    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnica.objects.all())
     class Meta:
         model = Tour
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
@@ -63,7 +63,7 @@ class TourModelSerializer(ModelSerializer):
         return instance
 
 class HotelModelSerializer(ModelSerializer):
-    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaHotel.objects.all())
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaHotel.objects.all())
     class Meta:
         model = Hotel
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']
@@ -105,7 +105,7 @@ class HotelModelSerializer(ModelSerializer):
         return instance
 
 class RestauranteModelSerializer(ModelSerializer):
-    fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaRestaurante.objects.all())
+    # fichasTecnicas = serializers.PrimaryKeyRelatedField(many=True,queryset=FichaTecnicaRestaurante.objects.all())
     class Meta:
         model = Restaurante
         # fields = ['ciudad','excursion','provedor','ppp','pvp','fichasTecnicas']

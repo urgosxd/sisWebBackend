@@ -4,10 +4,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from requests import delete
 from rest_framework import status, viewsets
-from crud.models import Boleto, FichaTecnica, Guiado, Hotel, Notification, Restaurante, Tour, Transporte, Traslado, Tren, UpSelling
+from crud.models import Boleto, Guiado, Hotel, Notification, Restaurante, Tour, Transporte, Traslado, Tren, UpSelling
 import tempfile
 import os
-from crud.serializer import BoletoModelSerializer, FichaTecnicaSerializer, GuiadoModelSerializer, HotelModelSerializer, NotificationSerializer, RestauranteModelSerializer, TourModelSerializer, TransporteModelSerializer, TrasladoModelSerializer, TrenModelSerializer, UpSellingModelSerializer
+from crud.serializer import BoletoModelSerializer, GuiadoModelSerializer, HotelModelSerializer, NotificationSerializer, RestauranteModelSerializer, TourModelSerializer, TransporteModelSerializer, TrasladoModelSerializer, TrenModelSerializer, UpSellingModelSerializer
 from rest_framework.response import Response
 from django.db import transaction 
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -33,25 +33,27 @@ class TourView(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         return [permision() for permision in permission_classes]
     def perform_create(self, serializer,files):
-        with transaction.atomic():
-            tour = serializer.save()
-            for i in files:
-                i["Tour"] = tour.id
-                format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
-                ext = format.split('/')[-1]  # guess file extension
-                i["Doc_Content"] = base64.b64decode(filestr)
-            ga= FichaTecnicaSerializer(data=files,many=True)
-            if ga.is_valid():
-                ga.save()
-            else:
-                print(ga.errors)
-                print("NOOO")
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Tour"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data,context={'request':request})
         serializer.is_valid(raise_exception=True)
         # print(request.data["fichas"])
-        self.perform_create(serializer,json.loads(request.data["fichas"]))
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer,None)
         # print(serializer.errors)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -117,7 +119,6 @@ class TourView(viewsets.ModelViewSet):
 class CleanTour(APIView):
     permission_classes= [IsAuthenticated]
     def put(self,request,pk,format=None):
-        print(request.data)
         if request.data == "None":
             Tour.objects.filter(id=pk).update(currentUser=None)
             return Response({"ga","res"})
@@ -145,27 +146,27 @@ def write_file(data, filename,ext):
     finally:
         return path
 
-class FichaTecnicaView(viewsets.ModelViewSet):
-    # permission_classes = []
-    serializer_class = FichaTecnicaSerializer
-    queryset = FichaTecnica.objects.all()
-    def get_permissions(self):
-        permission_classes = []
-        if self.action == 'list':
-            permission_classes = []
-        else: 
-            permission_classes = []
-        return [permision() for permision in permission_classes]
-    def retrieve(self, request, *args,**kwargs):
-        instance = self.get_object()
-        # serializer = self.get_serializer(instance)
-        path = write_file(instance.Doc_Content,instance.FileName,instance.Extension)
-        # file_path = staticfiles_storage.path(one.FileName+"."+one.Extension)
-        with open(path,'rb') as pdf:
-            response = HttpResponse(pdf.read(),content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="{instance.FileName}.pdf"'
-            os.remove(path)
-            return response
+# class FichaTecnicaView(viewsets.ModelViewSet):
+#     # permission_classes = []
+#     serializer_class = FichaTecnicaSerializer
+#     queryset = FichaTecnica.objects.all()
+#     def get_permissions(self):
+#         permission_classes = []
+#         if self.action == 'list':
+#             permission_classes = []
+#         else: 
+#             permission_classes = []
+#         return [permision() for permision in permission_classes]
+#     def retrieve(self, request, *args,**kwargs):
+#         instance = self.get_object()
+#         # serializer = self.get_serializer(instance)
+#         path = write_file(instance.Doc_Content,instance.FileName,instance.Extension)
+#         # file_path = staticfiles_storage.path(one.FileName+"."+one.Extension)
+#         with open(path,'rb') as pdf:
+#             response = HttpResponse(pdf.read(),content_type='application/pdf')
+#             response['Content-Disposition'] = f'attachment; filename="{instance.FileName}.pdf"'
+#             os.remove(path)
+#             return response
 
 
 class NotificationView(viewsets.ModelViewSet):
@@ -206,25 +207,27 @@ class HotelView(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         return [permision() for permision in permission_classes]
     def perform_create(self, serializer,files):
-        with transaction.atomic():
-            tour = serializer.save()
-            for i in files:
-                i["Hotel"] = tour.id
-                format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
-                ext = format.split('/')[-1]  # guess file extension
-                i["Doc_Content"] = base64.b64decode(filestr)
-            ga= FichaTecnicaSerializer(data=files,many=True)
-            if ga.is_valid():
-                ga.save()
-            else:
-                print(ga.errors)
-                print("NOOO")
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Hotel"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data,context={'request':request})
         serializer.is_valid(raise_exception=True)
         # print(request.data["fichas"])
-        self.perform_create(serializer,json.loads(request.data["fichas"]))
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer,None)
         # print(serializer.errors)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -284,6 +287,17 @@ class HotelView(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"ga","res"})
+
+class CleanHotel(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            Hotel.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Hotel.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
+
 
 
 class RestauranteView(viewsets.ModelViewSet):
@@ -302,25 +316,27 @@ class RestauranteView(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
         return [permision() for permision in permission_classes]
     def perform_create(self, serializer,files):
-        with transaction.atomic():
-            tour = serializer.save()
-            for i in files:
-                i["Restaurante"] = tour.id
-                format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
-                ext = format.split('/')[-1]  # guess file extension
-                i["Doc_Content"] = base64.b64decode(filestr)
-            ga= FichaTecnicaSerializer(data=files,many=True)
-            if ga.is_valid():
-                ga.save()
-            else:
-                print(ga.errors)
-                print("NOOO")
+        serializer.save()
+        # with transaction.atomic():
+        #     tour = serializer.save()
+        #     for i in files:
+        #         i["Restaurante"] = tour.id
+        #         format, filestr = i["Doc_Content"].split(';base64,')  # format ~= data:image/X,
+        #         ext = format.split('/')[-1]  # guess file extension
+        #         i["Doc_Content"] = base64.b64decode(filestr)
+        #     ga= FichaTecnicaSerializer(data=files,many=True)
+        #     if ga.is_valid():
+        #         ga.save()
+        #     else:
+        #         print(ga.errors)
+        #         print("NOOO")
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data = request.data,context={'request':request})
         serializer.is_valid(raise_exception=True)
         # print(request.data["fichas"])
-        self.perform_create(serializer,json.loads(request.data["fichas"]))
+        # self.perform_create(serializer,json.loads(request.data["fichas"]))
+        self.perform_create(serializer,None)
         # print(serializer.errors)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -380,6 +396,17 @@ class RestauranteView(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"ga","res"})
+
+class CleanRest(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            Restaurante.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Restaurante.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
+
 
 
 class BoletoView(viewsets.ModelViewSet):
@@ -482,6 +509,16 @@ class BoletoView(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"ga","res"})
+
+class CleanBoleto(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            Boleto.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Boleto.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
 
 
 class TrasladoView(viewsets.ModelViewSet):
@@ -586,6 +623,16 @@ class TrasladoView(viewsets.ModelViewSet):
         return Response({"ga","res"})
 
 
+class CleanTraslado(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            Traslado.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Traslado.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
+
 class TrenView(viewsets.ModelViewSet):
     # permission_classes = []
     serializer_class = TrenModelSerializer
@@ -686,6 +733,16 @@ class TrenView(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"ga","res"})
+
+class CleanTren(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            Tren.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Tren.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
 
 
 class TransporteView(viewsets.ModelViewSet):
@@ -789,6 +846,16 @@ class TransporteView(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return Response({"ga","res"})
 
+class CleanTransporte(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            Transporte.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Transporte.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
+
 
 class UpSellingView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -891,6 +958,16 @@ class UpSellingView(viewsets.ModelViewSet):
         self.perform_destroy(instance)
         return Response({"ga","res"})
 
+class CleanUpselling(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            UpSelling.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            UpSelling.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
+
 
 class GuiadoView(viewsets.ModelViewSet):
     # permission_classes = []
@@ -992,4 +1069,15 @@ class GuiadoView(viewsets.ModelViewSet):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"ga","res"})
+
+
+class CleanGuiado(APIView):
+    permission_classes= [IsAuthenticated]
+    def put(self,request,pk,format=None):
+        if request.data == "None":
+            Guiado.objects.filter(id=pk).update(currentUser=None)
+            return Response({"ga","res"})
+        else:
+            Guiado.objects.filter(id=pk).update(currentUser=int(request.data))
+            return Response({"ga","res"})
 
