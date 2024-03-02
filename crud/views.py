@@ -27,7 +27,7 @@ class TourView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -201,7 +201,7 @@ class HotelView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -310,7 +310,7 @@ class RestauranteView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -419,7 +419,7 @@ class BoletoView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -531,7 +531,7 @@ class TrasladoView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -643,7 +643,7 @@ class TrenView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -755,7 +755,7 @@ class TransporteView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -867,7 +867,7 @@ class UpSellingView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]
@@ -979,7 +979,7 @@ class GuiadoView(viewsets.ModelViewSet):
     #     return Tour.objects.all()
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'list':
+        if self.action == 'listGAA':
             permission_classes = []
         else: 
             permission_classes = [IsAuthenticated]

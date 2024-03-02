@@ -147,10 +147,10 @@ ROOT_URLCONF = 'core.urls'
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=10),
-    'ROTATE_REFRESH_TOKENS': True, 
-    # 'BLACKLIST_AFTER_ROTATION': True, 
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(day=1),
+    'ROTATE_REFRESH_TOKENS': False, 
+    'BLACKLIST_AFTER_ROTATION': False, 
     # 'UPDATE_LAST_LOGIN': True,
     "USER_ID_FIELD": "id",  # for the custom user model
     "USER_ID_CLAIM": "id",
