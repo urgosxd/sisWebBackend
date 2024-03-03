@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 
     # logal django apps
     'drfauth.apps.DrfauthConfig',
@@ -147,10 +149,10 @@ ROOT_URLCONF = 'core.urls'
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=2),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True, 
-    'BLACKLIST_AFTER_ROTATION': False, 
+    'BLACKLIST_AFTER_ROTATION': True, 
     # 'UPDATE_LAST_LOGIN': True,
     "USER_ID_FIELD": "id",  # for the custom user model
     "USER_ID_CLAIM": "id",
